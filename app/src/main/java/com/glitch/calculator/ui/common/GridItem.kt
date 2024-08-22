@@ -3,7 +3,8 @@ package com.glitch.calculator.ui.common
 import com.glitch.calculator.R
 
 data class GridItem(
-	val imageRes: Int
+	val imageRes: Int,
+	val span: Int = 1
 )
 
 
@@ -16,7 +17,9 @@ val gridItems = listOf(
 	GridItem(R.drawable.light_4),
 	GridItem(R.drawable.light_3),
 	GridItem(R.drawable.light_2),
-	GridItem(R.drawable.light_1)
+	GridItem(R.drawable.light_1),
+	GridItem(R.drawable.light_0,  2),
+	GridItem(R.drawable.light_point)
 )
 
 val twoByFourGridItems = listOf(

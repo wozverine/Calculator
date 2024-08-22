@@ -1,6 +1,7 @@
 package com.glitch.calculator
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.glitch.calculator.ui.common.CustomButton
 import com.glitch.calculator.ui.common.GridItem
 import com.glitch.calculator.ui.common.gridItems
 import com.glitch.calculator.ui.common.twoByFourGridItems
@@ -67,8 +68,8 @@ fun GridItem(item: GridItem) {
 		contentDescription = null,
 		modifier = Modifier
 			.padding(4.dp),
-			//.fillMaxSize(),
-			//.aspectRatio(1f),
+		//.fillMaxSize(),
+		//.aspectRatio(1f),
 		contentScale = ContentScale.Crop
 	)
 }
@@ -95,7 +96,7 @@ fun Calculate() {
 				.fillMaxSize()
 				.padding(paddingValues)
 		) {
-			val (textbox, twobyfour, threebythree, zero, side) = createRefs()
+			val (textbox, twobyfour, threebythree, side) = createRefs()
 
 			Text(
 				text = "0+0+0",
@@ -128,15 +129,56 @@ fun Calculate() {
 				}
 			}
 
-
-
 			LazyVerticalGrid(
+				columns = GridCells.Fixed(3),
 				modifier = Modifier
-					.width((screenWidth/4*3).dp)
+					.width((screenWidth / 4 * 3).dp)
 					.constrainAs(threebythree) {
 						top.linkTo(twobyfour.bottom)
 						start.linkTo(parent.start)
-						bottom.linkTo(zero.top)
+						bottom.linkTo(parent.bottom)
+						end.linkTo(side.start)
+					}
+					.padding(4.dp)
+			) {
+				items(gridItems.size) { index ->
+					val item = gridItems[index]
+					Box(
+						modifier = Modifier
+							.padding(4.dp)
+							.run {
+								if (item.span == 2) {
+									Modifier
+										.fillMaxSize()
+										.aspectRatio(2f)
+										//.width((screenWidth / 3 * 2).dp) // Span two columns
+										.height((screenWidth / 4).dp)   // Keep the height consistent
+								} else {
+									Modifier
+										.width((screenWidth / 3).dp)   // Single column width
+										.height((screenWidth / 4).dp)   // Keep the height consistent
+								}
+							}
+					) {
+						Image(
+							painter = painterResource(id = item.imageRes),
+							contentDescription = null,
+							modifier = Modifier
+								.fillMaxSize()
+								.padding(4.dp),
+							contentScale = ContentScale.Crop
+						)
+					}
+				}
+			}
+
+			/*LazyVerticalGrid(
+				modifier = Modifier
+					.width((screenWidth / 4 * 3).dp)
+					.constrainAs(threebythree) {
+						top.linkTo(twobyfour.bottom)
+						start.linkTo(parent.start)
+						bottom.linkTo(parent.bottom)
 						end.linkTo(side.start)
 					},
 				columns = GridCells.Fixed(3)
@@ -144,7 +186,7 @@ fun Calculate() {
 				items(gridItems.size) { index ->
 					GridItem(gridItems[index])
 				}
-			}
+			}*/
 
 			Column(
 				modifier = Modifier
@@ -174,49 +216,47 @@ fun Calculate() {
 						contentScale = ContentScale.FillBounds,
 						contentDescription = null,
 						modifier = Modifier
-						//.fillMaxSize()
+							.fillMaxSize()
 						//.size((screenWidth / 4).dp)
 					)
 				}
-				CustomButton(
-					idImage = R.drawable.light_plus,
+				Box(
 					modifier = Modifier
+						.clip(RoundedCornerShape(4.dp))
 						.weight(2f)
-						.fillMaxWidth()
-				)
-				CustomButton(
-					idImage = R.drawable.light_plus,
+						.clickable(onClick = {
+
+						}),
+					contentAlignment = Alignment.Center
+				) {
+					Image(
+						painter = painterResource(id = R.drawable.light_plus),
+						contentScale = ContentScale.FillBounds,
+						contentDescription = null,
+						modifier = Modifier
+							.fillMaxSize()
+						//.size((screenWidth / 4).dp)
+					)
+				}
+				Box(
 					modifier = Modifier
+						.clip(RoundedCornerShape(4.dp))
 						.weight(2f)
-						.fillMaxWidth()
-				)
+						.clickable(onClick = {
+
+						}),
+					contentAlignment = Alignment.Center
+				) {
+					Image(
+						painter = painterResource(id = R.drawable.light_equal),
+						contentScale = ContentScale.FillBounds,
+						contentDescription = null,
+						modifier = Modifier
+							.fillMaxSize()
+						//.size((screenWidth / 4).dp)
+					)
+				}
 			}
-
-
-			Row(
-				modifier = Modifier
-					.padding(3.dp)
-					.constrainAs(zero) {
-						top.linkTo(threebythree.bottom)
-						start.linkTo(parent.start)
-						end.linkTo(threebythree.end)
-						bottom.linkTo(parent.bottom)
-					},
-					//.fillMaxWidth(),
-				horizontalArrangement = Arrangement.spacedBy(2.dp),
-				verticalAlignment = Alignment.CenterVertically
-			) {
-				CustomButton(
-					idImage = R.drawable.light_0,
-					modifier = Modifier
-				)
-				CustomButton(
-					idImage = R.drawable.light_point,
-					modifier = Modifier
-				)
-			}
-
-
 		}
 	}
 }
