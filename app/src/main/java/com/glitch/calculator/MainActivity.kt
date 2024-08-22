@@ -1,7 +1,6 @@
 package com.glitch.calculator
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +24,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -67,12 +67,23 @@ fun GridItem(item: GridItem) {
 		painter = painterResource(id = item.imageRes),
 		contentDescription = null,
 		modifier = Modifier
+			.clickable(onClick = {
+				//calculate.value = (calculate.value.toString() + (item.number.toString()))
+			})
 			.padding(4.dp),
 		//.fillMaxSize(),
 		//.aspectRatio(1f),
 		contentScale = ContentScale.Crop
 	)
 }
+
+fun sumFromString(input: String): Int {
+	val cleanedInput = if (input.endsWith("+")) input.dropLast(1) else input
+	return cleanedInput.split("+")
+		.map { it.toIntOrNull() ?: 0 }
+		.sum()
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -81,6 +92,10 @@ fun Calculate() {
 
 	val screenWidth = configuration.screenWidthDp
 	val screenHeight = configuration.screenHeightDp
+
+	val calculate = remember {
+		mutableStateOf("")
+	}
 
 	Scaffold(topBar = {
 		CenterAlignedTopAppBar(
@@ -99,7 +114,8 @@ fun Calculate() {
 			val (textbox, twobyfour, threebythree, side) = createRefs()
 
 			Text(
-				text = "0+0+0",
+				text = calculate.value.toString(),
+
 				modifier = Modifier
 					.height((screenHeight / 6).dp)
 					.fillMaxWidth()
@@ -125,7 +141,34 @@ fun Calculate() {
 					}
 			) {
 				items(twoByFourGridItems.size) { index ->
-					GridItem(twoByFourGridItems[index])
+					val item = twoByFourGridItems[index]
+					Box(
+						modifier = Modifier
+
+							.fillMaxSize()
+							//.width((screenWidth/4).dp)
+							.padding(4.dp)
+					) {
+						Image(
+							painter = painterResource(id = item.imageRes),
+							contentDescription = null,
+							modifier = Modifier
+								.fillMaxSize()
+								.padding(4.dp)
+								.clickable(onClick = {
+									if (item.number == -1) {
+										calculate.value = ""
+									}
+
+									//Log.v("pressed","pressed")
+									/*calculate.value =
+										(calculate.value.toString() + (item.number.toString()))*/
+								}),
+
+							contentScale = ContentScale.Crop
+						)
+						//GridItem(item)
+					}
 				}
 			}
 
@@ -145,18 +188,22 @@ fun Calculate() {
 					val item = gridItems[index]
 					Box(
 						modifier = Modifier
+							.clickable(onClick = {
+								calculate.value.toString() + item.number.toString()
+							})
 							.padding(4.dp)
 							.run {
 								if (item.span == 2) {
-									Modifier
+									val height = Modifier
 										.fillMaxSize()
 										.aspectRatio(2f)
-										//.width((screenWidth / 3 * 2).dp) // Span two columns
-										.height((screenWidth / 4).dp)   // Keep the height consistent
+										//.width((screenWidth / 3 * 2).dp)
+										.height((screenWidth / 4).dp)
+									height
 								} else {
 									Modifier
-										.width((screenWidth / 3).dp)   // Single column width
-										.height((screenWidth / 4).dp)   // Keep the height consistent
+										.width((screenWidth / 3).dp)
+										.height((screenWidth / 4).dp)
 								}
 							}
 					) {
@@ -165,7 +212,13 @@ fun Calculate() {
 							contentDescription = null,
 							modifier = Modifier
 								.fillMaxSize()
-								.padding(4.dp),
+								.padding(4.dp)
+								.clickable(onClick = {
+									//Log.v("pressed","pressed")
+									calculate.value =
+										(calculate.value.toString() + (item.number.toString()))
+								}),
+
 							contentScale = ContentScale.Crop
 						)
 					}
@@ -223,10 +276,8 @@ fun Calculate() {
 				Box(
 					modifier = Modifier
 						.clip(RoundedCornerShape(4.dp))
-						.weight(2f)
-						.clickable(onClick = {
+						.weight(2f),
 
-						}),
 					contentAlignment = Alignment.Center
 				) {
 					Image(
@@ -235,6 +286,10 @@ fun Calculate() {
 						contentDescription = null,
 						modifier = Modifier
 							.fillMaxSize()
+							.clickable(onClick = {
+								//Log.v("pressed","pressed")
+								calculate.value = (calculate.value.toString() + "+")
+							})
 						//.size((screenWidth / 4).dp)
 					)
 				}
@@ -243,7 +298,7 @@ fun Calculate() {
 						.clip(RoundedCornerShape(4.dp))
 						.weight(2f)
 						.clickable(onClick = {
-
+							calculate.value = sumFromString(calculate.value.toString()).toString()
 						}),
 					contentAlignment = Alignment.Center
 				) {
