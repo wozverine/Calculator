@@ -104,9 +104,9 @@ fun Calculate() {
 	Scaffold(topBar = {
 		CenterAlignedTopAppBar(
 			title = { Text(text = "Calculator") },
-			colors = TopAppBarDefaults.topAppBarColors(
+			/*colors = TopAppBarDefaults.topAppBarColors(
 				containerColor = Purple80, titleContentColor = PurpleGrey40
-			)
+			)*/
 		)
 	}) { paddingValues ->
 
