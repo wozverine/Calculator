@@ -1,5 +1,6 @@
 # Calculator
-Calculator app made with Jetpack Compose.
+Calculator app made with Jetpack Compose. 
+Subtraction and addition operators are working.
 
 ## Project Features
 - [x] Jetpack Compose
